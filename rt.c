@@ -11,15 +11,15 @@ draw_hist (void) {
     hist_t* hist;
 
     hist = send.head;
-    y = 3;
-    while (y < LINES - 2) {
+    y = LINES - 3;
+    while (y > 2) {
         if (hist) {
             mvprintw(y, COLS - 7, "| 0x%02X ", hist->c);
             hist = hist->next;
         } else {
             mvprintw(y, COLS - 7, "|      ");
         }
-        y += 1;
+        y -= 1;
     }
 }
 
@@ -33,22 +33,9 @@ redraw (void) {
         mvaddch(2, i, '-');
         mvaddch(LINES - 2, i, '-');
     }
-//    mvprintw(LINES - 1, 0, "lastkey:%d", lastkey);
     draw_hist();
     refresh();
 }
-
-void
-dumph (void) {
-    hist_t* hist = send.head;
-    printf("====\n");
-    while (hist) {
-        printf("  [%#02x]\n", hist->c);
-        hist = hist->next;
-    }
-    printf("\n");
-}
-
 
 
 int main() {
