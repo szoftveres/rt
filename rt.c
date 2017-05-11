@@ -1,8 +1,27 @@
 #include <ncurses.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include "rt_hist.h"
 
-static int lastkey;
+void
+draw_hist (void) {
+    int y;
+    int x;
+    hist_t* hist;
+
+    hist = send.head;
+    y = 3;
+    while (y < LINES - 2) {
+        if (hist) {
+            mvprintw(y, COLS - 7, "| 0x%02X ", hist->c);
+            hist = hist->next;
+        } else {
+            mvprintw(y, COLS - 7, "|      ");
+        }
+        y += 1;
+    }
+}
 
 void
 redraw (void) {
@@ -14,13 +33,28 @@ redraw (void) {
         mvaddch(2, i, '-');
         mvaddch(LINES - 2, i, '-');
     }
-    mvprintw(LINES - 1, 0, "lastkey:%d", lastkey);
+//    mvprintw(LINES - 1, 0, "lastkey:%d", lastkey);
+    draw_hist();
     refresh();
 }
+
+void
+dumph (void) {
+    hist_t* hist = send.head;
+    printf("====\n");
+    while (hist) {
+        printf("  [%#02x]\n", hist->c);
+        hist = hist->next;
+    }
+    printf("\n");
+}
+
+
 
 int main() {
     int key;
 
+    hist_init();
     initscr();
     redraw();
     while ((key = getch()) != ERR) {
@@ -32,12 +66,14 @@ int main() {
             endwin();
             exit(0);
           default:
-            lastkey = key;
+            hist_push(&send, key);
+            hist_gc(&send, HIST_SIZE);
             redraw();
             break;
         }
     }
     endwin();
+
     return 0;
 }
 

@@ -11,7 +11,8 @@ CFLAGS = -Wall -O0 -I $(INCLDIR)
 LDFLAGS = -lncurses
 
 ## Objects that must be built in order to link
-OBJECTS = $(OBJDIR)/rt.o
+OBJECTS = $(OBJDIR)/rt.o                \
+          $(OBJDIR)/rt_hist.o
 
 
 ## Build both compiler and program
