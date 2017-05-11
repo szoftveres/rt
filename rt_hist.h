@@ -13,14 +13,8 @@ typedef struct hist_head_s {
     int             size;
 } hist_head_t;
 
-
-extern hist_head_t     send;
-extern hist_head_t     recv;
-
-#define HIST_SIZE   (512)
-
 void
-hist_init (void);
+hist_init (hist_head_t* list);
 void
 hist_push (hist_head_t* list, int c);
 void

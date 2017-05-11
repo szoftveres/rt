@@ -2,23 +2,52 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#include <termios.h>
+#include <unistd.h>
+
 #include "rt_hist.h"
 
+#define HIST_SIZE       (512)
+
+hist_head_t     rx_head;
+hist_head_t     tx_head;
+
+
 void
-draw_hist (hist_head_t* list) {
+draw_hist (void) {
     int y;
     int x;
-    hist_t* hist;
+    hist_t* rx;
+    hist_t* tx;
 
-    hist = list->head;
+    rx = rx_head.head;
+    tx = tx_head.head;
     y = LINES - 3;
-    while (y > 2) {
-        if (hist) {
-            mvprintw(y, COLS - 7, "| 0x%02X ", hist->c);
-            hist = hist->next;
-        } else {
-            mvprintw(y, COLS - 7, "|      ");
+    while (y) {
+        x = COLS - 14;
+        if (y == 3) {
+            mvprintw(y, x, "| -Rx- | -Tx- ");
+            break;
         }
+        mvprintw(y, x, "| ");
+        x += 2;
+        if (rx) {
+            mvprintw(y, x, "0x%02X", rx->c);
+            rx = rx->next;
+        } else {
+            mvprintw(y, x, "    ");
+        }
+        x += 4;
+        mvprintw(y, x, " | ");
+        x += 3;
+        if (tx) {
+            mvprintw(y, x, "0x%02X", tx->c);
+            tx = tx->next;
+        } else {
+            mvprintw(y, x, "    ");
+        }
+        x += 4;
         y -= 1;
     }
 }
@@ -33,7 +62,7 @@ redraw (void) {
         mvaddch(2, i, '-');
         mvaddch(LINES - 2, i, '-');
     }
-    draw_hist(&send);
+    draw_hist();
     refresh();
 }
 
@@ -41,7 +70,8 @@ redraw (void) {
 int main() {
     int key;
 
-    hist_init();
+    hist_init(&rx_head);
+    hist_init(&tx_head);
     initscr();
     redraw();
     while ((key = getch()) != ERR) {
@@ -53,8 +83,8 @@ int main() {
             endwin();
             exit(0);
           default:
-            hist_push(&send, key);
-            hist_gc(&send, HIST_SIZE);
+            hist_push(&tx_head, key);
+            hist_gc(&tx_head, HIST_SIZE);
             redraw();
             break;
         }

@@ -3,13 +3,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
-hist_head_t     send;
-hist_head_t     recv;
-
 void
-hist_init (void) {
-    memset(&send, 0, sizeof(send));
-    memset(&recv, 0, sizeof(recv));
+hist_init (hist_head_t* list) {
+    memset(list, 0, sizeof(hist_head_t));
 }
 
 /* Push to the front */
