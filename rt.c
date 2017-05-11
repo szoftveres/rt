@@ -5,12 +5,12 @@
 #include "rt_hist.h"
 
 void
-draw_hist (void) {
+draw_hist (hist_head_t* list) {
     int y;
     int x;
     hist_t* hist;
 
-    hist = send.head;
+    hist = list->head;
     y = LINES - 3;
     while (y > 2) {
         if (hist) {
@@ -28,12 +28,12 @@ redraw (void) {
     int i;
     clear();
     mvprintw(0, 0, "COLS = %d, LINES = %d", COLS, LINES);
-    mvprintw(1, 0, "Press 'ESC' to exit");
+    mvprintw(1, 0, "Press 'Ctrl-X' to exit");
     for (i = 0; i < COLS; i++) {
         mvaddch(2, i, '-');
         mvaddch(LINES - 2, i, '-');
     }
-    draw_hist();
+    draw_hist(&send);
     refresh();
 }
 
@@ -49,7 +49,7 @@ int main() {
           case KEY_RESIZE:
             redraw();
             break;
-          case 27:
+          case 0x18:
             endwin();
             exit(0);
           default:
