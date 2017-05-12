@@ -8,11 +8,13 @@ PROGRAM = rt
 CC = gcc
 LD = gcc
 CFLAGS = -Wall -O0 -I $(INCLDIR)
-LDFLAGS = -lncurses
+LDFLAGS = -lncurses -lpthread
 
 ## Objects that must be built in order to link
-OBJECTS = $(OBJDIR)/rt.o                \
-          $(OBJDIR)/rt_hist.o
+OBJECTS = $(OBJDIR)/rt_main.o                   \
+          $(OBJDIR)/rt_hist.o                   \
+          $(OBJDIR)/rt_disp_thrd.o              \
+          $(OBJDIR)/rt_queue.o
 
 
 ## Build both compiler and program

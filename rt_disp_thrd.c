@@ -5,8 +5,12 @@
 
 #include <termios.h>
 #include <unistd.h>
+#include <pthread.h>
 
+#include "rt_common.h"
 #include "rt_hist.h"
+#include "rt_disp_thrd.h"
+#include "rt_queue.h"
 
 #define HIST_SIZE       (512)
 
@@ -31,13 +35,13 @@ draw_hist (void) {
             break;
         }
         mvprintw(y, x, "| ");
-        x += 2;
+        x += 2; 
         if (rx) {
             mvprintw(y, x, "0x%02X", rx->c);
             rx = rx->next;
         } else {
             mvprintw(y, x, "    ");
-        }
+        } 
         x += 4;
         mvprintw(y, x, " | ");
         x += 3;
@@ -51,6 +55,7 @@ draw_hist (void) {
         y -= 1;
     }
 }
+
 
 void
 redraw (void) {
@@ -67,31 +72,39 @@ redraw (void) {
 }
 
 
-int main() {
-    int key;
+
+
+void*
+disp_thrd (void* arg) {
+    int run;
 
     hist_init(&rx_head);
     hist_init(&tx_head);
+
     initscr();
     redraw();
-    while ((key = getch()) != ERR) {
-        switch (key) {
-          case KEY_RESIZE:
+    run = 1;
+    while (run) {
+        rt_event_t *event;
+
+        event = (rt_event_t*) queue_pop(&event_queue);
+        switch (event->e) {
+          case EVENT_REDRAW:
             redraw();
             break;
-          case 0x18:
-            endwin();
-            exit(0);
+          case EVENT_EXIT:
+            run = 0;
           default:
-            hist_push(&tx_head, key);
+            hist_push(&tx_head, event->c);
             hist_gc(&tx_head, HIST_SIZE);
             redraw();
             break;
         }
+        free(event);
     }
     endwin();
 
-    return 0;
-}
+    return NULL;
 
+}
 
