@@ -18,6 +18,9 @@ pthread_t       rcv_thrd_info;
 
 queue_head_t    event_queue;
 
+
+
+
 int main() {
     int run;
 
@@ -38,19 +41,17 @@ int main() {
         switch (key) {
           case KEY_RESIZE:
             event->e = EVENT_REDRAW;
-            queue_push (&event_queue, (queue_item_t*)event);
             break;
           case 0x18:
             event->e = EVENT_EXIT;
-            queue_push (&event_queue, (queue_item_t*)event);
             run = 0;
             break;
           default:
             event->e = EVENT_TX;
             event->c = key;
-            queue_push (&event_queue, (queue_item_t*)event);
             break;
         }
+        queue_push (&event_queue, (queue_item_t*)event);
     }
 
     pthread_join(disp_thrd_info, NULL);
