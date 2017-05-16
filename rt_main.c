@@ -11,14 +11,13 @@
 #include "rt_common.h"
 #include "rt_queue.h"
 #include "rt_disp_thrd.h"
+#include "rt_rx_thrd.h"
 
 
 pthread_t       disp_thrd_info;
-pthread_t       rcv_thrd_info;
+pthread_t       rx_thrd_info;
 
 queue_head_t    event_queue;
-
-
 
 
 int main() {
@@ -26,6 +25,7 @@ int main() {
 
     queue_init(&event_queue);
     pthread_create(&disp_thrd_info, NULL, disp_thrd, NULL);
+    pthread_create(&rx_thrd_info, NULL, rx_thrd, NULL);
     sleep(1);
     run = 1;
 

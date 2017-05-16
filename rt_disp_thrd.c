@@ -35,13 +35,13 @@ draw_hist (void) {
             break;
         }
         mvprintw(y, x, "| ");
-        x += 2; 
+        x += 2;
         if (rx) {
             mvprintw(y, x, "0x%02X", rx->c);
             rx = rx->next;
         } else {
             mvprintw(y, x, "    ");
-        } 
+        }
         x += 4;
         mvprintw(y, x, " | ");
         x += 3;
@@ -72,8 +72,6 @@ redraw (void) {
 }
 
 
-
-
 void*
 disp_thrd (void* arg) {
     int run;
@@ -94,9 +92,14 @@ disp_thrd (void* arg) {
             break;
           case EVENT_EXIT:
             run = 0;
-          default:
+          case EVENT_TX:
             hist_push(&tx_head, event->c);
             hist_gc(&tx_head, HIST_SIZE);
+            redraw();
+            break;
+          case EVENT_RX:
+            hist_push(&rx_head, event->c);
+            hist_gc(&rx_head, HIST_SIZE);
             redraw();
             break;
         }
@@ -105,6 +108,5 @@ disp_thrd (void* arg) {
     endwin();
 
     return NULL;
-
 }
 

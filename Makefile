@@ -14,6 +14,7 @@ LDFLAGS = -lncurses -lpthread
 OBJECTS = $(OBJDIR)/rt_main.o                   \
           $(OBJDIR)/rt_hist.o                   \
           $(OBJDIR)/rt_disp_thrd.o              \
+          $(OBJDIR)/rt_rx_thrd.o                \
           $(OBJDIR)/rt_queue.o
 
 
@@ -30,5 +31,5 @@ $(PROGRAM): $(SUBDIRS) $(OBJECTS)
 
 
 clean:
-	-rm -rf $(OBJECTS)
+	-rm -rf $(OBJECTS) $(PROGRAM)
 
